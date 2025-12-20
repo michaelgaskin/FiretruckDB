@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contribute - FiretruckDB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <h1>FiretruckDB Contribute</h1>
+            <div>
+                <a href="index.html">Home</a>
+                <a href="contribute.html">Contribute</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Add New Apparatus</h2>
+
+        <form id="truck-form">
+            <div class="form-group">
+                <label for="name">Truck Name</label>
+                <input type="text" id="name" name="name" placeholder="e.g. Engine 1">
+            </div>
+
+            <div class="form-group">
+                <label for="department_id">Department</label>
+                <div style="display: flex; gap: 10px;">
+                    <select id="department_id" name="department_id">
+                        <option value="">Select Department...</option>
+                    </select>
+                    <button type="button" onclick="createNewDepartment()">+ New</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="year">Year</label>
+                <input type="number" id="year" name="year" required min="1900" max="2100">
+            </div>
+
+            <div class="form-group">
+                <label for="chassis_mfg">Chassis Manufacturer</label>
+                <input type="text" id="chassis_mfg" name="chassis_mfg" required placeholder="e.g. Seagrave">
+            </div>
+
+            <div class="form-group">
+                <label for="body_mfg">Body Manufacturer</label>
+                <input type="text" id="body_mfg" name="body_mfg" placeholder="Leave blank if same as chassis">
+            </div>
+
+            <div class="form-group">
+                <label for="aerial_mfg">Aerial Manufacturer</label>
+                <input type="text" id="aerial_mfg" name="aerial_mfg" placeholder="Leave blank if same as chassis">
+            </div>
+
+            <h3>Specifications</h3>
+
+            <div class="form-group">
+                <label for="pump_capacity">Pump Capacity (GPM)</label>
+                <input type="number" id="pump_capacity" name="pump_capacity" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="water_capacity">Water Capacity (Gallons)</label>
+                <input type="number" id="water_capacity" name="water_capacity" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="foam_a_capacity">Foam A Capacity (Gallons)</label>
+                <input type="number" id="foam_a_capacity" name="foam_a_capacity" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="foam_b_capacity">Foam B Capacity (Gallons)</label>
+                <input type="number" id="foam_b_capacity" name="foam_b_capacity" value="0">
+            </div>
+
+            <h3>Aerial Device</h3>
+
+            <div class="form-group">
+                <label for="aerial_height">Aerial Height (Feet)</label>
+                <input type="number" id="aerial_height" name="aerial_height" value="0">
+            </div>
+
+            <div class="form-group">
+                <label for="aerial_type">Aerial Type</label>
+                <input type="text" id="aerial_type" name="aerial_type" placeholder="e.g. Rear Mount Platform">
+            </div>
+
+            <button type="submit">Create Record</button>
+        </form>
+
+        <div id="upload-section" class="upload-section hidden">
+            <h3>Upload Photos</h3>
+            <p>Record created! ID: <span id="new-truck-id"></span></p>
+            <input type="file" id="image-upload" accept="image/*">
+            <button onclick="uploadImage()">Upload</button>
+            <div id="upload-status"></div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+    <script>
+        document.getElementById('truck-form').addEventListener('submit', handleFormSubmit);
+    </script>
+</body>
+
+</html>

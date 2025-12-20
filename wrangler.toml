@@ -1,0 +1,16 @@
+name = "firetruck-db"
+main = "src/index.ts"
+compatibility_date = "2024-04-01"
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "firetruck-db"
+database_id = "584b993d-5d35-4ae9-bae5-eab2e06a6682"
+
+[[r2_buckets]]
+binding = "BUCKET"
+bucket_name = "firetruck-images"
