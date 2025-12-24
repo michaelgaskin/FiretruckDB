@@ -46,12 +46,60 @@ app.post('/api/departments', async (c) => {
 // GET /api/trucks
 app.get('/api/trucks', async (c) => {
   try {
-    const { results } = await c.env.DB.prepare(
-      `SELECT trucks.*, departments.name as department_name 
+    const query = c.req.query();
+    let sql = `SELECT trucks.*, departments.name as department_name 
        FROM trucks 
-       LEFT JOIN departments ON trucks.department_id = departments.id 
-       ORDER BY trucks.created_at DESC`
-    ).all();
+       LEFT JOIN departments ON trucks.department_id = departments.id`;
+
+    const conditions: string[] = [];
+    const params: any[] = [];
+
+    // Global search string (searches across textual fields)
+    if (query.q) {
+      const search = `%${query.q}%`;
+      conditions.push(`(
+        trucks.name LIKE ? OR 
+        trucks.chassis_mfg LIKE ? OR 
+        trucks.body_mfg LIKE ? OR 
+        trucks.aerial_mfg LIKE ? OR
+        departments.name LIKE ?
+      )`);
+      params.push(search, search, search, search, search);
+    }
+
+    // Specific field filters
+    if (query.year) {
+      conditions.push('trucks.year = ?');
+      params.push(query.year);
+    }
+
+    if (query.department_id) {
+      conditions.push('trucks.department_id = ?');
+      params.push(query.department_id);
+    }
+
+    if (query.chassis_mfg) {
+      conditions.push('trucks.chassis_mfg LIKE ?');
+      params.push(`%${query.chassis_mfg}%`);
+    }
+
+    if (query.pump_min) {
+      conditions.push('trucks.pump_capacity >= ?');
+      params.push(query.pump_min);
+    }
+
+    if (query.tank_min) {
+      conditions.push('trucks.water_capacity >= ?');
+      params.push(query.tank_min);
+    }
+
+    if (conditions.length > 0) {
+      sql += ' WHERE ' + conditions.join(' AND ');
+    }
+
+    sql += ' ORDER BY trucks.created_at DESC';
+
+    const { results } = await c.env.DB.prepare(sql).bind(...params).all();
     return c.json(results);
   } catch (e) {
     return c.json({ error: e.message }, 500);
