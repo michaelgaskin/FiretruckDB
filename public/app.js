@@ -1,9 +1,56 @@
 const API_BASE = '/api';
 
-async function loadTrucks() {
-    const grid = document.getElementById('truck-grid');
+async function loadTrucks(forceLoad = false) {
+    let grid = document.getElementById('truck-grid');
+
+    // Build Query Params
+    const params = new URLSearchParams();
+
+    const searchInput = document.getElementById('search-input');
+    if (searchInput && searchInput.value.trim()) {
+        params.append('q', searchInput.value.trim());
+    }
+
+    const yearInput = document.getElementById('filter-year');
+    if (yearInput && yearInput.value) {
+        params.append('year', yearInput.value);
+    }
+
+    const chassisInput = document.getElementById('filter-chassis');
+    if (chassisInput && chassisInput.value.trim()) {
+        params.append('chassis_mfg', chassisInput.value.trim());
+    }
+
+    const deptInput = document.getElementById('filter-dept');
+    if (deptInput && deptInput.value) {
+        params.append('department_id', deptInput.value);
+    }
+
+    const hasFilters = [...params.keys()].length > 0;
+
+    // If on search page, don't load initially unless filters or forced
+    if (searchInput && !hasFilters && !forceLoad) {
+        return;
+    }
+
+    // Create grid if it doesn't exist (e.g., search page after removal)
+    if (!grid) {
+        const main = document.querySelector('main');
+        if (main) {
+            const section = document.createElement('section');
+            section.className = 'fleet-section';
+            grid = document.createElement('div');
+            grid.id = 'truck-grid';
+            grid.className = 'truck-grid';
+            section.appendChild(grid);
+            main.appendChild(section);
+        }
+    }
+
+    if (!grid) return;
+
     try {
-        const response = await fetch(`${API_BASE}/trucks`);
+        const response = await fetch(`${API_BASE}/trucks?${params.toString()}`);
         const trucks = await response.json();
 
         if (trucks.error) {
@@ -17,7 +64,7 @@ async function loadTrucks() {
         grid.innerHTML = '';
 
         if (trucks.length === 0) {
-            grid.innerHTML = '<p>No trucks found in the fleet.</p>';
+            grid.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 2rem;">No trucks found matching your criteria.</p>';
             return;
         }
 
@@ -134,8 +181,8 @@ async function uploadImage() {
     }
 }
 
-async function loadDepartments() {
-    const select = document.getElementById('department_id');
+async function loadDepartments(targetId = 'department_id') {
+    const select = document.getElementById(targetId);
     if (!select) return;
 
     try {
@@ -177,11 +224,135 @@ async function createNewDepartment() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    if (document.getElementById('truck-grid')) {
-        loadTrucks();
+async function loadRecentlyAdded() {
+    const track = document.getElementById('recently-added-carousel');
+    if (!track) return;
+
+    try {
+        const response = await fetch(`${API_BASE}/trucks`);
+        const trucks = await response.json();
+
+        if (trucks.error) throw new Error(trucks.error);
+
+        track.innerHTML = '';
+
+        // Take latest 8 trucks for the carousel
+        const latestTrucks = trucks.slice(0, 8);
+
+        if (latestTrucks.length === 0) {
+            track.innerHTML = '<p class="loading-text">No trucks found yet.</p>';
+            return;
+        }
+
+        for (const truck of latestTrucks) {
+            const card = document.createElement('div');
+            card.className = 'truck-card';
+
+            let imageUrl = 'https://placehold.co/600x400?text=No+Image';
+            try {
+                const detailRes = await fetch(`${API_BASE}/trucks/${truck.id}`);
+                const detail = await detailRes.json();
+                if (detail.images && detail.images.length > 0) {
+                    imageUrl = detail.images[0].image_url;
+                }
+            } catch (e) {
+                console.error('Failed to load image for truck', truck.id);
+            }
+
+            card.innerHTML = `
+                <img src="${imageUrl}" alt="${truck.year} ${truck.chassis_mfg}" class="truck-image">
+                <div class="truck-details">
+                <div class="truck-title">
+                    ${truck.name ? `<span class="truck-name">${truck.name}</span>` : ''}
+                    ${truck.year} ${truck.chassis_mfg}
+                </div>
+                ${truck.department_name ? `<div class="truck-dept">${truck.department_name}</div>` : ''}
+                </div>
+            `;
+            track.appendChild(card);
+        }
+
+        initializeCarousel();
+    } catch (e) {
+        track.innerHTML = `<p class="loading-text">Error: ${e.message}</p>`;
     }
-    if (document.getElementById('department_id')) {
-        loadDepartments();
+}
+
+function initializeCarousel() {
+    const track = document.getElementById('recently-added-carousel');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    if (!track || !prevBtn || !nextBtn) return;
+
+    let currentIndex = 0;
+    const items = track.querySelectorAll('.truck-card');
+    const itemWidth = 320 + 32; // card width + gap
+
+    function updateCarousel() {
+        const containerWidth = track.parentElement.clientWidth;
+        const visibleItems = Math.floor(containerWidth / itemWidth);
+        const maxIndex = Math.max(0, items.length - visibleItems);
+
+        if (currentIndex > maxIndex) currentIndex = maxIndex;
+        if (currentIndex < 0) currentIndex = 0;
+
+        track.style.transform = `translateX(-${currentIndex * itemWidth}px)`;
+
+        prevBtn.disabled = currentIndex === 0;
+        nextBtn.disabled = currentIndex >= maxIndex;
+    }
+
+    prevBtn.addEventListener('click', () => {
+        currentIndex--;
+        updateCarousel();
+    });
+
+    nextBtn.addEventListener('click', () => {
+        currentIndex++;
+        updateCarousel();
+    });
+
+    window.addEventListener('resize', updateCarousel);
+    updateCarousel();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Determine which page we are on
+    const isSearchPage = document.getElementById('search-input') !== null;
+    const isHomePage = document.getElementById('recently-added-carousel') !== null;
+    const isContributePage = document.getElementById('truck-form') !== null;
+
+    if (isSearchPage) {
+        loadTrucks();
+        loadDepartments('filter-dept');
+
+        // Search Listeners
+        const searchBtn = document.getElementById('search-btn');
+        if (searchBtn) {
+            searchBtn.addEventListener('click', loadTrucks);
+        }
+
+        const textInputs = ['search-input', 'filter-year', 'filter-chassis'];
+        textInputs.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') loadTrucks();
+                });
+            }
+        });
+
+        const deptFilter = document.getElementById('filter-dept');
+        if (deptFilter) {
+            deptFilter.addEventListener('change', loadTrucks);
+        }
+    }
+
+    if (isHomePage) {
+        loadRecentlyAdded();
+    }
+
+    if (isContributePage) {
+        loadDepartments('department_id');
     }
 });

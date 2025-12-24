@@ -14,6 +14,7 @@
       <h1>FiretruckDB</h1>
       <div>
         <a href="index.html">Home</a>
+        <a href="search.html">Search</a>
         <a href="contribute.html">Contribute</a>
       </div>
     </nav>
@@ -24,7 +25,7 @@
       <h2 class="hero-title">Welcome to FiretruckDB</h2>
 
       <div class="action-cards">
-        <a href="#" class="action-card search-card">
+        <a href="search.html" class="action-card search-card">
           <div class="card-icon">🔍</div>
           <h3>Search Fire Trucks</h3>
           <p>Browse our extensive collection of fire apparatus from around the globe.</p>
@@ -38,6 +39,20 @@
       </div>
     </div>
   </main>
+
+  <section class="carousel-section">
+    <h2 class="section-title">Recently Added</h2>
+    <div class="carousel-container">
+      <button class="carousel-nav prev" id="carousel-prev">❮</button>
+      <div class="carousel-track-container">
+        <div id="recently-added-carousel" class="carousel-track">
+          <!-- Latest trucks will be loaded here -->
+          <p class="loading-text">Loading latest additions...</p>
+        </div>
+      </div>
+      <button class="carousel-nav next" id="carousel-next">❯</button>
+    </div>
+  </section>
 
   <script src="app.js"></script>
 </body>

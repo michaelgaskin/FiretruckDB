@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Fleet - FiretruckDB</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <nav>
+            <h1>FiretruckDB</h1>
+            <div>
+                <a href="index.html">Home</a>
+                <a href="search.html">Search</a>
+                <a href="contribute.html">Contribute</a>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <section class="search-header">
+            <h2>Search the Fleet</h2>
+            <p>Filter by year, chassis, manufacturer, or department.</p>
+        </section>
+
+        <section class="search-container">
+            <div class="search-bar-wrapper">
+                <input type="text" id="search-input" placeholder="Search fleet (e.g., 'Pierce' or 'Engine 1')...">
+                <button id="search-btn" class="btn-primary">Search</button>
+            </div>
+
+            <div class="search-filters">
+                <input type="number" id="filter-year" placeholder="Year" class="search-filter">
+                <input type="text" id="filter-chassis" placeholder="Chassis Mfg" class="search-filter">
+                <select id="filter-dept" class="search-filter">
+                    <option value="">All Departments</option>
+                </select>
+            </div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
