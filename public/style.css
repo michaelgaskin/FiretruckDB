@@ -158,9 +158,9 @@ button:hover {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 80vh;
+  min-height: 40vh;
   background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 2rem;
+  padding: 1.5rem;
   text-align: center;
 }
 
@@ -170,8 +170,8 @@ button:hover {
 }
 
 .hero-title {
-  font-size: 3rem;
-  margin-bottom: 4rem;
+  font-size: 2.2rem;
+  margin-bottom: 2rem;
   color: var(--primary);
   text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1);
 }
@@ -193,7 +193,7 @@ button:hover {
 .action-card {
   background: var(--surface);
   border-radius: 16px;
-  padding: 3rem 2rem;
+  padding: 1.5rem 1rem;
   flex: 1;
   min-width: 300px;
   max-width: 400px;
@@ -214,11 +214,11 @@ button:hover {
 }
 
 .card-icon {
-  font-size: 4rem;
-  margin-bottom: 1.5rem;
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
   background: #f0f4f8;
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -232,15 +232,15 @@ button:hover {
 }
 
 .action-card h3 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
+  font-size: 1.4rem;
+  margin-bottom: 0.5rem;
   color: var(--primary);
 }
 
 .action-card p {
-  font-size: 1.1rem;
+  font-size: 0.95rem;
   color: #666;
-  line-height: 1.6;
+  line-height: 1.4;
 }
 
 /* Search Section */
